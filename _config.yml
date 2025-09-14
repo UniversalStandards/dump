@@ -1,0 +1,5 @@
+title: Code Block Extractor
+description: Web-based tool for extracting and organizing code blocks from conversation dumps
+show_downloads: true
+google_analytics:
+theme: jekyll-theme-minimal
