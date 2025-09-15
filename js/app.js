@@ -94,14 +94,14 @@ class CodeExtractorApp {
             
             fileItem.innerHTML = `
                 <div class="file-info">
-                    <i class="fas fa-file-text"></i>
+                    <span class="file-icon">📄</span>
                     <div class="file-details">
                         <div class="file-name">${fileName}</div>
                         <div class="file-size">${this.formatFileSize(file.size)}</div>
                     </div>
                 </div>
                 <button class="file-remove" onclick="app.removeFile('${fileName}')" title="Remove file">
-                    <i class="fas fa-times"></i>
+                    ❌
                 </button>
             `;
 
@@ -234,6 +234,11 @@ class CodeExtractorApp {
             return;
         }
 
+        // Store file contents for download access
+        if (!window.extractedFileContents) {
+            window.extractedFileContents = new Map();
+        }
+
         // Group results by topic
         const topicGroups = new Map();
         
@@ -253,9 +258,15 @@ class CodeExtractorApp {
             const allFiles = topicResults.flatMap(r => r.files);
             const totalBlocks = topicResults.reduce((sum, r) => sum + r.blocksExtracted, 0);
 
+            // Store file contents for download
+            allFiles.forEach(file => {
+                const fileKey = `${topicName}/${file.fileName}`;
+                window.extractedFileContents.set(fileKey, file.content);
+            });
+
             topicGroup.innerHTML = `
                 <div class="topic-title">
-                    <i class="fas fa-folder"></i>
+                    <span class="folder-icon">📂</span>
                     ${topicName} (${totalBlocks} code blocks)
                 </div>
                 <div class="code-files">
@@ -283,6 +294,7 @@ class CodeExtractorApp {
         };
 
         const bgColor = languageColors[file.language] || '#6c757d';
+        const fileKey = `${topicName}/${file.fileName}`;
 
         return `
             <div class="code-file">
@@ -293,8 +305,8 @@ class CodeExtractorApp {
                     <span class="code-file-name">${file.fileName}</span>
                     <span class="code-file-stats">${file.lines} lines</span>
                 </div>
-                <button class="download-single" onclick="app.downloadSingleFile('${topicName}', '${file.fileName}', \`${file.content.replace(/`/g, '\\`')}\`)">
-                    <i class="fas fa-download"></i>
+                <button class="download-single" onclick="app.downloadSingleFileByKey('${fileKey}', '${file.fileName}')">
+                    💾
                 </button>
             </div>
         `;
@@ -359,6 +371,17 @@ class CodeExtractorApp {
         }
     }
 
+    downloadSingleFileByKey(fileKey, fileName) {
+        if (!window.extractedFileContents || !window.extractedFileContents.has(fileKey)) {
+            this.showNotification('File content not found', 'error');
+            return;
+        }
+        
+        const content = window.extractedFileContents.get(fileKey);
+        const blob = new Blob([content], { type: 'text/plain' });
+        this.downloadBlob(blob, fileName);
+    }
+
     downloadSingleFile(topicName, fileName, content) {
         const blob = new Blob([content], { type: 'text/plain' });
         this.downloadBlob(blob, fileName);
@@ -402,7 +425,7 @@ class CodeExtractorApp {
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
         notification.innerHTML = `
-            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+            <span class="notification-icon">${type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️'}</span>
             ${message}
         `;
         
