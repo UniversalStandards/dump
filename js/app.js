@@ -28,6 +28,8 @@ class CodeExtractorApp {
         document.getElementById('downloadAllBtn').addEventListener('click', () => this.downloadAll());
         document.getElementById('newExtractionBtn').addEventListener('click', () => this.startNewExtraction());
         document.getElementById('retryBtn').addEventListener('click', () => this.hideError());
+        document.getElementById('loadStoredBtn').addEventListener('click', () => this.loadFromLocalStorage());
+        document.getElementById('clearStorageBtn').addEventListener('click', () => this.clearLocalStorage());
 
         // Settings
         document.getElementById('outputName').addEventListener('input', (e) => {
@@ -201,6 +203,9 @@ class CodeExtractorApp {
         const stats = this.extractor.getStats();
         this.displayStats(stats);
         this.displayExtractedFiles();
+        
+        // Auto-save results to browser storage
+        this.saveToLocalStorage();
     }
 
     displayStats(stats) {
@@ -316,59 +321,107 @@ class CodeExtractorApp {
         if (!this.extractionResults) return;
 
         try {
-            const zip = new JSZip();
-            const stats = this.extractor.getStats();
+            // Check if JSZip is properly loaded
+            if (window.JSZip && typeof window.JSZip === 'function') {
+                // Use JSZip if available
+                const zip = new JSZip();
+                const stats = this.extractor.getStats();
 
-            // Group files by topic
-            const topicGroups = new Map();
-            
-            this.extractionResults.forEach(({ file, result }) => {
-                if (result.files && result.files.length > 0) {
-                    if (!topicGroups.has(result.topic)) {
-                        topicGroups.set(result.topic, { files: [], metadata: result.metadata });
-                    }
-                    topicGroups.get(result.topic).files.push(...result.files);
-                }
-            });
-
-            // Add files to ZIP
-            topicGroups.forEach((topicData, topicName) => {
-                const folder = zip.folder(topicName);
+                // Group files by topic
+                const topicGroups = new Map();
                 
-                // Add code files
-                topicData.files.forEach(file => {
-                    folder.file(file.fileName, file.content);
+                this.extractionResults.forEach(({ file, result }) => {
+                    if (result.files && result.files.length > 0) {
+                        if (!topicGroups.has(result.topic)) {
+                            topicGroups.set(result.topic, { files: [], metadata: result.metadata });
+                        }
+                        topicGroups.get(result.topic).files.push(...result.files);
+                    }
                 });
 
-                // Add metadata if enabled
-                if (document.getElementById('includeMetadata').checked && topicData.metadata) {
-                    folder.file('metadata.json', JSON.stringify(topicData.metadata, null, 2));
-                }
-            });
+                // Add files to ZIP
+                topicGroups.forEach((topicData, topicName) => {
+                    const folder = zip.folder(topicName);
+                    
+                    // Add code files
+                    topicData.files.forEach(file => {
+                        folder.file(file.fileName, file.content);
+                    });
 
-            // Add summary file
-            const summary = {
-                extraction_summary: {
-                    total_files_processed: stats.filesProcessed,
-                    total_code_blocks: stats.codeBlocksFound,
-                    topics_created: stats.topicsCreated,
-                    languages_detected: stats.languagesDetected,
-                    processed_at: new Date().toISOString()
-                },
-                topics: Array.from(topicGroups.keys())
-            };
-            
-            zip.file('EXTRACTION_SUMMARY.json', JSON.stringify(summary, null, 2));
+                    // Add metadata if enabled
+                    if (document.getElementById('includeMetadata').checked && topicData.metadata) {
+                        folder.file('metadata.json', JSON.stringify(topicData.metadata, null, 2));
+                    }
+                });
 
-            // Generate and download ZIP
-            const blob = await zip.generateAsync({ type: 'blob' });
-            this.downloadBlob(blob, `${this.extractor.outputName}.zip`);
+                // Add summary file
+                const summary = {
+                    extraction_summary: {
+                        total_files_processed: stats.filesProcessed,
+                        total_code_blocks: stats.codeBlocksFound,
+                        topics_created: stats.topicsCreated,
+                        languages_detected: stats.languagesDetected,
+                        processed_at: new Date().toISOString()
+                    },
+                    topics: Array.from(topicGroups.keys())
+                };
+                
+                zip.file('EXTRACTION_SUMMARY.json', JSON.stringify(summary, null, 2));
 
-            this.showNotification('Download started successfully!', 'success');
+                // Generate and download ZIP
+                const blob = await zip.generateAsync({ type: 'blob' });
+                this.downloadBlob(blob, `${this.extractor.outputName}.zip`);
+
+                this.showNotification('Download started successfully!', 'success');
+            } else {
+                // Fallback: Download individual files and summary
+                this.showNotification('ZIP download not available. Downloading individual files...', 'warning');
+                this.downloadIndividualFiles();
+            }
 
         } catch (error) {
-            this.showError(`Failed to create download: ${error.message}`);
+            console.error('Download error:', error);
+            this.showNotification('ZIP download failed. Downloading individual files...', 'warning');
+            this.downloadIndividualFiles();
         }
+    }
+
+    downloadIndividualFiles() {
+        // Fallback download method
+        const stats = this.extractor.getStats();
+        let delay = 0;
+
+        this.extractionResults.forEach(({ file, result }) => {
+            if (result.files && result.files.length > 0) {
+                result.files.forEach(codeFile => {
+                    setTimeout(() => {
+                        this.downloadBlob(
+                            new Blob([codeFile.content], { type: 'text/plain' }),
+                            codeFile.fileName
+                        );
+                    }, delay);
+                    delay += 500; // Stagger downloads
+                });
+            }
+        });
+
+        // Download summary
+        const summary = {
+            extraction_summary: {
+                total_files_processed: stats.filesProcessed,
+                total_code_blocks: stats.codeBlocksFound,
+                topics_created: stats.topicsCreated,
+                languages_detected: stats.languagesDetected,
+                processed_at: new Date().toISOString()
+            }
+        };
+
+        setTimeout(() => {
+            this.downloadBlob(
+                new Blob([JSON.stringify(summary, null, 2)], { type: 'application/json' }),
+                'EXTRACTION_SUMMARY.json'
+            );
+        }, delay);
     }
 
     downloadSingleFileByKey(fileKey, fileName) {
@@ -403,10 +456,58 @@ class CodeExtractorApp {
         this.extractionResults = null;
         this.extractor.reset();
         
+        // Clear any stored file contents
+        if (window.extractedFileContents) {
+            window.extractedFileContents.clear();
+        }
+        
         document.getElementById('resultsSection').style.display = 'none';
         document.getElementById('errorSection').style.display = 'none';
         
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Add browser-based file management
+    saveToLocalStorage() {
+        if (!this.extractionResults) return;
+        
+        const storageData = {
+            timestamp: new Date().toISOString(),
+            results: this.extractionResults,
+            stats: this.extractor.getStats()
+        };
+        
+        try {
+            localStorage.setItem('codeExtractorResults', JSON.stringify(storageData));
+            this.showNotification('Results saved to browser storage', 'success');
+        } catch (error) {
+            console.warn('Could not save to localStorage:', error);
+        }
+    }
+
+    loadFromLocalStorage() {
+        try {
+            const stored = localStorage.getItem('codeExtractorResults');
+            if (stored) {
+                const data = JSON.parse(stored);
+                this.extractionResults = data.results;
+                this.showResults();
+                this.showNotification('Previous results loaded from browser storage', 'success');
+                return true;
+            }
+        } catch (error) {
+            console.warn('Could not load from localStorage:', error);
+        }
+        return false;
+    }
+
+    clearLocalStorage() {
+        try {
+            localStorage.removeItem('codeExtractorResults');
+            this.showNotification('Browser storage cleared', 'success');
+        } catch (error) {
+            console.warn('Could not clear localStorage:', error);
+        }
     }
 
     showError(message) {
@@ -740,6 +841,17 @@ let app;
 
 document.addEventListener('DOMContentLoaded', function() {
     app = new CodeExtractorApp();
+    
+    // Check for stored results on page load
+    try {
+        const stored = localStorage.getItem('codeExtractorResults');
+        if (stored) {
+            document.getElementById('loadStoredBtn').style.display = 'inline-block';
+            document.getElementById('clearStorageBtn').style.display = 'inline-block';
+        }
+    } catch (error) {
+        console.warn('localStorage not available');
+    }
     
     // Add notification styles if not already present
     if (!document.querySelector('style[data-notifications]')) {
