@@ -63,7 +63,7 @@ class CodeBlock {
                 /INSERT\s+INTO/i
             ],
             bash: [
-                /#!/bin\/bash/,
+                /^#!\/bin\/bash/,
                 /echo\s+/,
                 /\$\w+/,
                 /if\s*\[\s*/

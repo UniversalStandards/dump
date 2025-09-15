@@ -7,12 +7,12 @@
     <meta name="description" content="Extract and organize code blocks from conversation dumps, chat logs, and text files with our free web-based tool.">
     <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💻</text></svg>">
     <link rel="stylesheet" href="styles.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Font Awesome icons will be replaced with simple Unicode symbols for GitHub Pages compatibility -->
 </head>
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-code"></i> Code Block Extractor</h1>
+            <h1>💻 Code Block Extractor</h1>
             <p>Extract and organize code blocks from conversation dumps, chat logs, and text files</p>
         </header>
 
@@ -21,12 +21,12 @@
             <section class="upload-section">
                 <div class="upload-area" id="uploadArea">
                     <div class="upload-content">
-                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                        <i class="upload-icon">☁️</i>
                         <h3>Drop your files here or click to browse</h3>
                         <p>Supports .md, .txt, and other text files</p>
                         <input type="file" id="fileInput" multiple accept=".md,.txt,.log,.rtf">
                         <button type="button" class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
-                            <i class="fas fa-folder-open"></i> Choose Files
+                            📁 Choose Files
                         </button>
                     </div>
                 </div>
@@ -34,7 +34,7 @@
 
             <!-- Processing Options -->
             <section class="options-section" id="optionsSection" style="display: none;">
-                <h3><i class="fas fa-cogs"></i> Processing Options</h3>
+                <h3>⚙️ Processing Options</h3>
                 <div class="options-grid">
                     <div class="option-group">
                         <label for="outputName">Output Folder Name:</label>
@@ -59,21 +59,21 @@
 
             <!-- File List -->
             <section class="file-list-section" id="fileListSection" style="display: none;">
-                <h3><i class="fas fa-list"></i> Selected Files</h3>
+                <h3>📋 Selected Files</h3>
                 <div id="fileList" class="file-list"></div>
                 <div class="action-buttons">
                     <button class="btn btn-success" id="processBtn">
-                        <i class="fas fa-play"></i> Extract Code Blocks
+                        ▶️ Extract Code Blocks
                     </button>
                     <button class="btn btn-secondary" id="clearBtn">
-                        <i class="fas fa-trash"></i> Clear All
+                        🗑️ Clear All
                     </button>
                 </div>
             </section>
 
             <!-- Progress Section -->
             <section class="progress-section" id="progressSection" style="display: none;">
-                <h3><i class="fas fa-spinner fa-spin"></i> Processing...</h3>
+                <h3>⏳ Processing...</h3>
                 <div class="progress-bar">
                     <div class="progress-fill" id="progressFill"></div>
                 </div>
@@ -83,25 +83,33 @@
 
             <!-- Results Section -->
             <section class="results-section" id="resultsSection" style="display: none;">
-                <h3><i class="fas fa-check-circle"></i> Extraction Results</h3>
+                <h3>✅ Extraction Results</h3>
                 <div id="extractionStats" class="stats-grid"></div>
                 <div id="extractedFiles" class="extracted-files"></div>
                 <div class="download-section">
                     <button class="btn btn-download" id="downloadAllBtn">
-                        <i class="fas fa-download"></i> Download All as ZIP
+                        💾 Download All as ZIP
                     </button>
                     <button class="btn btn-secondary" id="newExtractionBtn">
-                        <i class="fas fa-plus"></i> New Extraction
+                        ➕ New Extraction
+                    </button>
+                </div>
+                <div class="storage-section">
+                    <button class="btn btn-info" id="loadStoredBtn" style="display: none;">
+                        📂 Load Previous Results
+                    </button>
+                    <button class="btn btn-warning" id="clearStorageBtn" style="display: none;">
+                        🗑️ Clear Storage
                     </button>
                 </div>
             </section>
 
             <!-- Error Section -->
             <section class="error-section" id="errorSection" style="display: none;">
-                <h3><i class="fas fa-exclamation-triangle"></i> Error</h3>
+                <h3>⚠️ Error</h3>
                 <div id="errorMessage"></div>
                 <button class="btn btn-secondary" id="retryBtn">
-                    <i class="fas fa-redo"></i> Try Again
+                    🔄 Try Again
                 </button>
             </section>
         </main>
@@ -109,20 +117,20 @@
             <!-- Footer -->
         <footer>
             <p>
-                <i class="fas fa-info-circle"></i> 
+                ℹ️ 
                 Supports Python, JavaScript, HTML, CSS, SQL, YAML, JSON, Dockerfile, Bash, Java, C/C++, and more
             </p>
             <div class="help-links">
                 <button class="help-btn" onclick="app.showHelp()">
-                    <i class="fas fa-question-circle"></i> Help
+                    ❓ Help
                 </button>
                 <button class="help-btn" onclick="app.loadDemo()">
-                    <i class="fas fa-rocket"></i> Try Demo
+                    🚀 Try Demo
                 </button>
             </div>
             <div class="github-link">
                 <a href="https://github.com/UniversalStandards/dump" target="_blank">
-                    <i class="fab fa-github"></i> View on GitHub
+                    🌐 View on GitHub
                 </a>
             </div>
         </footer>
@@ -132,12 +140,12 @@
     <div id="helpModal" class="modal" style="display: none;">
         <div class="modal-content">
             <div class="modal-header">
-                <h2><i class="fas fa-question-circle"></i> How to Use Code Block Extractor</h2>
+                <h2>❓ How to Use Code Block Extractor</h2>
                 <button class="modal-close" onclick="app.closeHelp()">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="help-section">
-                    <h3><i class="fas fa-upload"></i> Step 1: Upload Files</h3>
+                    <h3>📤 Step 1: Upload Files</h3>
                     <p>Drag and drop your conversation files, or click "Choose Files" to select them. Supported formats:</p>
                     <ul>
                         <li><strong>.md</strong> - Markdown files</li>
@@ -148,7 +156,7 @@
                 </div>
 
                 <div class="help-section">
-                    <h3><i class="fas fa-cogs"></i> Step 2: Configure Options</h3>
+                    <h3>⚙️ Step 2: Configure Options</h3>
                     <p>Customize your extraction:</p>
                     <ul>
                         <li><strong>Output Folder Name</strong> - Name for your extracted code collection</li>
@@ -158,7 +166,7 @@
                 </div>
 
                 <div class="help-section">
-                    <h3><i class="fas fa-play"></i> Step 3: Extract Code</h3>
+                    <h3>▶️ Step 3: Extract Code</h3>
                     <p>Click "Extract Code Blocks" to start processing. The tool will:</p>
                     <ul>
                         <li>Find fenced code blocks (```language)</li>
@@ -169,7 +177,7 @@
                 </div>
 
                 <div class="help-section">
-                    <h3><i class="fas fa-download"></i> Step 4: Download Results</h3>
+                    <h3>💾 Step 4: Download Results</h3>
                     <p>Get your organized code files:</p>
                     <ul>
                         <li><strong>Download All as ZIP</strong> - Complete archive with folder structure</li>
@@ -178,7 +186,7 @@
                 </div>
 
                 <div class="help-section">
-                    <h3><i class="fas fa-code"></i> Supported Languages</h3>
+                    <h3>💻 Supported Languages</h3>
                     <div class="language-grid">
                         <span class="language-tag">Python</span>
                         <span class="language-tag">JavaScript</span>
@@ -196,7 +204,7 @@
                 </div>
 
                 <div class="help-section">
-                    <h3><i class="fas fa-shield-alt"></i> Privacy & Security</h3>
+                    <h3>🔒 Privacy & Security</h3>
                     <p>Your files are processed entirely in your browser - nothing is uploaded to any server. All processing happens client-side for maximum privacy and security.</p>
                 </div>
             </div>
@@ -206,12 +214,61 @@
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay" style="display: none;">
         <div class="loading-content">
-            <i class="fas fa-cog fa-spin loading-icon"></i>
+            <i class="loading-icon">⚙️</i>
             <p>Processing your files...</p>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- JSZip will be loaded with fallback handling -->
+    <script>
+        // Fallback for JSZip if CDN fails
+        window.JSZipLoaded = false;
+        
+        function loadJSZipFallback() {
+            if (!window.JSZip) {
+                console.warn('JSZip not available from CDN, using fallback download method');
+                // We'll implement a simple download fallback
+                window.JSZip = {
+                    // Mock JSZip with basic functionality
+                    folder: function(name) {
+                        return {
+                            file: function(filename, content) {
+                                // Store for fallback download
+                                if (!window.fallbackFiles) window.fallbackFiles = {};
+                                window.fallbackFiles[name + '/' + filename] = content;
+                            }
+                        };
+                    },
+                    file: function(filename, content) {
+                        if (!window.fallbackFiles) window.fallbackFiles = {};
+                        window.fallbackFiles[filename] = content;
+                    },
+                    generateAsync: function() {
+                        return Promise.resolve(new Blob(['Fallback: Individual file downloads available'], { type: 'text/plain' }));
+                    }
+                };
+            }
+            window.JSZipLoaded = true;
+        }
+        
+        // Try to load JSZip from CDN, fallback on error
+        var script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+        script.onload = function() {
+            window.JSZipLoaded = true;
+        };
+        script.onerror = function() {
+            loadJSZipFallback();
+        };
+        document.head.appendChild(script);
+        
+        // Ensure JSZip is loaded before app initialization
+        setTimeout(function() {
+            if (!window.JSZipLoaded) {
+                loadJSZipFallback();
+            }
+        }, 3000);
+    </script>
     <script src="js/code-extractor.js"></script>
     <script src="js/app.js"></script>
 </body>
