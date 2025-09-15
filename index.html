@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Block Extractor</title>
+    <meta name="description" content="Extract and organize code blocks from conversation dumps, chat logs, and text files with our free web-based tool.">
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💻</text></svg>">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-code"></i> Code Block Extractor</h1>
+            <p>Extract and organize code blocks from conversation dumps, chat logs, and text files</p>
+        </header>
+
+        <main>
+            <!-- File Upload Section -->
+            <section class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-content">
+                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                        <h3>Drop your files here or click to browse</h3>
+                        <p>Supports .md, .txt, and other text files</p>
+                        <input type="file" id="fileInput" multiple accept=".md,.txt,.log,.rtf">
+                        <button type="button" class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                            <i class="fas fa-folder-open"></i> Choose Files
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Processing Options -->
+            <section class="options-section" id="optionsSection" style="display: none;">
+                <h3><i class="fas fa-cogs"></i> Processing Options</h3>
+                <div class="options-grid">
+                    <div class="option-group">
+                        <label for="outputName">Output Folder Name:</label>
+                        <input type="text" id="outputName" value="extracted_code" placeholder="extracted_code">
+                    </div>
+                    <div class="option-group">
+                        <label>
+                            <input type="checkbox" id="verboseMode" checked>
+                            <span class="checkmark"></span>
+                            Verbose processing
+                        </label>
+                    </div>
+                    <div class="option-group">
+                        <label>
+                            <input type="checkbox" id="includeMetadata" checked>
+                            <span class="checkmark"></span>
+                            Include metadata files
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- File List -->
+            <section class="file-list-section" id="fileListSection" style="display: none;">
+                <h3><i class="fas fa-list"></i> Selected Files</h3>
+                <div id="fileList" class="file-list"></div>
+                <div class="action-buttons">
+                    <button class="btn btn-success" id="processBtn">
+                        <i class="fas fa-play"></i> Extract Code Blocks
+                    </button>
+                    <button class="btn btn-secondary" id="clearBtn">
+                        <i class="fas fa-trash"></i> Clear All
+                    </button>
+                </div>
+            </section>
+
+            <!-- Progress Section -->
+            <section class="progress-section" id="progressSection" style="display: none;">
+                <h3><i class="fas fa-spinner fa-spin"></i> Processing...</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div id="progressText">Initializing...</div>
+                <div id="progressDetails"></div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <h3><i class="fas fa-check-circle"></i> Extraction Results</h3>
+                <div id="extractionStats" class="stats-grid"></div>
+                <div id="extractedFiles" class="extracted-files"></div>
+                <div class="download-section">
+                    <button class="btn btn-download" id="downloadAllBtn">
+                        <i class="fas fa-download"></i> Download All as ZIP
+                    </button>
+                    <button class="btn btn-secondary" id="newExtractionBtn">
+                        <i class="fas fa-plus"></i> New Extraction
+                    </button>
+                </div>
+            </section>
+
+            <!-- Error Section -->
+            <section class="error-section" id="errorSection" style="display: none;">
+                <h3><i class="fas fa-exclamation-triangle"></i> Error</h3>
+                <div id="errorMessage"></div>
+                <button class="btn btn-secondary" id="retryBtn">
+                    <i class="fas fa-redo"></i> Try Again
+                </button>
+            </section>
+        </main>
+
+            <!-- Footer -->
+        <footer>
+            <p>
+                <i class="fas fa-info-circle"></i> 
+                Supports Python, JavaScript, HTML, CSS, SQL, YAML, JSON, Dockerfile, Bash, Java, C/C++, and more
+            </p>
+            <div class="help-links">
+                <button class="help-btn" onclick="app.showHelp()">
+                    <i class="fas fa-question-circle"></i> Help
+                </button>
+                <button class="help-btn" onclick="app.loadDemo()">
+                    <i class="fas fa-rocket"></i> Try Demo
+                </button>
+            </div>
+            <div class="github-link">
+                <a href="https://github.com/UniversalStandards/dump" target="_blank">
+                    <i class="fab fa-github"></i> View on GitHub
+                </a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="helpModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-question-circle"></i> How to Use Code Block Extractor</h2>
+                <button class="modal-close" onclick="app.closeHelp()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="help-section">
+                    <h3><i class="fas fa-upload"></i> Step 1: Upload Files</h3>
+                    <p>Drag and drop your conversation files, or click "Choose Files" to select them. Supported formats:</p>
+                    <ul>
+                        <li><strong>.md</strong> - Markdown files</li>
+                        <li><strong>.txt</strong> - Text files</li>
+                        <li><strong>.log</strong> - Log files</li>
+                        <li><strong>.rtf</strong> - Rich text files</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3><i class="fas fa-cogs"></i> Step 2: Configure Options</h3>
+                    <p>Customize your extraction:</p>
+                    <ul>
+                        <li><strong>Output Folder Name</strong> - Name for your extracted code collection</li>
+                        <li><strong>Verbose Processing</strong> - See detailed extraction progress</li>
+                        <li><strong>Include Metadata</strong> - Add JSON files with extraction details</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3><i class="fas fa-play"></i> Step 3: Extract Code</h3>
+                    <p>Click "Extract Code Blocks" to start processing. The tool will:</p>
+                    <ul>
+                        <li>Find fenced code blocks (```language)</li>
+                        <li>Detect indented code (4+ spaces)</li>
+                        <li>Automatically identify programming languages</li>
+                        <li>Organize code by conversation topics</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3><i class="fas fa-download"></i> Step 4: Download Results</h3>
+                    <p>Get your organized code files:</p>
+                    <ul>
+                        <li><strong>Download All as ZIP</strong> - Complete archive with folder structure</li>
+                        <li><strong>Individual Files</strong> - Download specific code files one by one</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3><i class="fas fa-code"></i> Supported Languages</h3>
+                    <div class="language-grid">
+                        <span class="language-tag">Python</span>
+                        <span class="language-tag">JavaScript</span>
+                        <span class="language-tag">HTML</span>
+                        <span class="language-tag">CSS</span>
+                        <span class="language-tag">SQL</span>
+                        <span class="language-tag">Java</span>
+                        <span class="language-tag">C/C++</span>
+                        <span class="language-tag">Bash</span>
+                        <span class="language-tag">JSON</span>
+                        <span class="language-tag">YAML</span>
+                        <span class="language-tag">Dockerfile</span>
+                        <span class="language-tag">XML</span>
+                    </div>
+                </div>
+
+                <div class="help-section">
+                    <h3><i class="fas fa-shield-alt"></i> Privacy & Security</h3>
+                    <p>Your files are processed entirely in your browser - nothing is uploaded to any server. All processing happens client-side for maximum privacy and security.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="loading-content">
+            <i class="fas fa-cog fa-spin loading-icon"></i>
+            <p>Processing your files...</p>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="js/code-extractor.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+{
+  "supported_extensions": [
+    ".md", ".txt", ".rst", ".log", ".conv"
+  ],
+  "output_directory": "extracted_code",
+  "minimum_code_block_size": 20,
+  "minimum_indented_block_lines": 3,
+  "minimum_indented_block_size": 50,
+  "language_extensions": {
+    "python": ".py",
+    "javascript": ".js",
+    "typescript": ".ts",
+    "java": ".java",
+    "c": ".c",
+    "cpp": ".cpp",
+    "csharp": ".cs",
+    "php": ".php",
+    "ruby": ".rb",
+    "go": ".go",
+    "rust": ".rs",
+    "html": ".html",
+    "css": ".css",
+    "scss": ".scss",
+    "less": ".less",
+    "sql": ".sql",
+    "bash": ".sh",
+    "powershell": ".ps1",
+    "json": ".json",
+    "yaml": ".yml",
+    "yml": ".yml",
+    "xml": ".xml",
+    "dockerfile": ".dockerfile",
+    "makefile": ".mk",
+    "txt": ".txt"
+  },
+  "code_patterns": {
+    "python": ["def\\s+\\w+\\(", "import\\s+\\w+", "from\\s+\\w+\\s+import", "print\\s*\\(", "class\\s+\\w+"],
+    "javascript": ["function\\s+\\w+\\(", "const\\s+\\w+\\s*=", "let\\s+\\w+\\s*=", "var\\s+\\w+\\s*=", "console\\.log\\("],
+    "java": ["public\\s+class\\s+\\w+", "public\\s+static\\s+void\\s+main", "System\\.out\\.print", "import\\s+\\w+"],
+    "c": ["#include\\s*<", "int\\s+main\\s*\\(", "printf\\s*\\(", "void\\s+\\w+\\("],
+    "cpp": ["#include\\s*<", "std::", "cout\\s*<<", "namespace\\s+\\w+"],
+    "html": ["<html", "<div", "<body", "<!DOCTYPE", "<\\w+[^>]*>"],
+    "css": ["\\w+\\s*\\{[^}]*\\}", "@media", "\\.\\w+\\s*\\{", "\\w+:\\s*[^;]+;"],
+    "sql": ["SELECT\\s+", "FROM\\s+", "WHERE\\s+", "INSERT\\s+INTO", "CREATE\\s+TABLE"],
+    "bash": ["#!/bin/bash", "echo\\s+", "\\$\\w+", "if\\s*\\[\\s*", "function\\s+\\w+"],
+    "json": ["^\\s*\\{", "^\\s*\\[", "\"\\w+\":\\s*"],
+    "yaml": ["^\\w+:", "^\\s*-\\s+\\w+", "\\w+:\\s*\\w+"],
+    "xml": ["<\\?xml", "<\\w+.*>.*</\\w+>", "xmlns"]
+  }
+}
